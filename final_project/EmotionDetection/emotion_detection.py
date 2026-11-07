@@ -1,9 +1,13 @@
 
+"""Detecta emociones en un texto mediante IBM Watson NLP."""
+
 import json
 import requests
 
 
 def emotion_detector(text_to_analyze):
+    """Analiza un texto y devuelve las emociones detectadas."""
+
     url = (
         "https://sn-watson-emotion.labs.skills.network/v1/"
         "watson.runtime.nlp.v1/NlpService/EmotionPredict"
@@ -26,16 +30,23 @@ def emotion_detector(text_to_analyze):
         headers=headers
     )
 
-    # Convertir la respuesta de Watson en un diccionario
-    formatted_response = json.loads(response.text)
+    # Manejar entradas invalidas
+    if response.status_code == 400:
+        return {
+            "anger": None,
+            "disgust": None,
+            "fear": None,
+            "joy": None,
+            "sadness": None,
+            "dominant_emotion": None
+        }
 
-    # Extraer las puntuaciones de las emociones
+    # Procesar respuestas validas
+    formatted_response = json.loads(response.text)
     emotions = formatted_response["emotionPredictions"][0]["emotion"]
 
-    # Encontrar la emocion con la puntuacion mas alta
     dominant_emotion = max(emotions, key=emotions.get)
 
-    # Devolver el formato solicitado por Coursera
     return {
         "anger": emotions["anger"],
         "disgust": emotions["disgust"],

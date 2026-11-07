@@ -1,7 +1,8 @@
 
-"""Aplicación web para detectar emociones mediante IBM Watson NLP."""
+"""Aplicación web de detección de emociones mediante IBM Watson NLP."""
 
 from flask import Flask, render_template, request
+
 from EmotionDetection import emotion_detector
 
 
@@ -10,19 +11,22 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    """Muestra la página principal."""
+    """Muestra la página principal del detector de emociones."""
     return render_template("index.html")
 
 
 @app.route("/emotionDetector")
 def detect_emotion():
-    """Analiza el texto recibido y muestra las emociones."""
+    """Analiza el texto ingresado y muestra las emociones detectadas."""
     text_to_analyze = request.args.get("textToAnalyze", "")
 
     response = emotion_detector(text_to_analyze)
 
+    if response["dominant_emotion"] is None:
+        return "Invalid text! Please try again!"
+
     return (
-        f"For the given statement, the system response is "
+        "For the given statement, the system response is "
         f"'anger': {response['anger']}, "
         f"'disgust': {response['disgust']}, "
         f"'fear': {response['fear']}, "
